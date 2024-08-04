@@ -1,0 +1,85 @@
+---
+title: "Lab1"
+author: "Pedro Vargas"
+date: "2024-08-04"
+output: html_document
+---
+
+PROBLEMA 1
+
+```{r}
+library(readxl)
+library(openxlsx)
+library(dplyr)
+
+tabla1 <- read.xlsx("01-2023.xlsx")
+tabla2 <- read.xlsx("02-2023.xlsx")
+tabla3 <- read.xlsx("03-2023.xlsx")
+tabla4 <- read.xlsx("04-2023.xlsx")
+tabla5 <- read.xlsx("05-2023.xlsx")
+tabla6 <- read.xlsx("06-2023.xlsx")
+tabla7 <- read.xlsx("07-2023.xlsx")
+tabla8 <- read.xlsx("08-2023.xlsx")
+tabla9 <- read.xlsx("09-2023.xlsx")
+tabla10 <- read.xlsx("10-2023.xlsx")
+tabla11 <- read.xlsx("11-2023.xlsx")
+
+tabla7 <- tabla7 %>%
+  select(-TIPO)
+tabla8 <- tabla8 %>%
+  select(-TIPO,-X10)
+tabla9 <- tabla9 %>%
+  select(-TIPO)
+tabla10 <- tabla10 %>%
+  select(-TIPO)
+tabla11 <- tabla11 %>%
+  select(-TIPO)
+
+tabla1$FECHA <- '01-2023'
+tabla2$FECHA <- '02-2023'
+tabla3$FECHA <- '03-2023'
+tabla4$FECHA <- '04-2023'
+tabla5$FECHA <- '05-2023'
+tabla6$FECHA <- '06-2023'
+tabla7$FECHA <- '07-2023'
+tabla8$FECHA <- '08-2023'
+tabla9$FECHA <- '09-2023'
+tabla10$FECHA <- '10-2023'
+tabla11$FECHA <- '11-2023'
+
+tabla_final <- bind_rows(tabla1,tabla2,tabla3,tabla4,tabla5,tabla6,tabla7,tabla8,tabla9,tabla10,tabla11)
+
+write.xlsx(tabla_final,"Entregas2023.xlsx")
+
+head(tabla_final)
+nrow(tabla_final)
+```
+
+PROBLEMA 2
+```{r}
+lista_vectores <- list(
+  sample(1:5,size = 10,replace = TRUE),
+  sample(20:45,size = 50,replace = TRUE),
+  sample(50:100,size = 100,replace = TRUE)
+)
+
+calculo_moda <- function(vec){
+  return(as.numeric(names(which.max(table(vec)))))
+}
+
+modas <- lapply(lista_vectores,calculo_moda)
+print(lista_vectores)
+print(modas)
+```
+
+PROBLEMA 3
+```{r}
+library(readr)
+ParqueVehicular <- read_delim('ParqueVehicularEnero2019.txt',delim = '|')
+ParqueVehicular <- ParqueVehicular %>%
+  select(-...11)
+
+nrow(ParqueVehicular)
+head(ParqueVehicular)
+```
+
