@@ -2,7 +2,7 @@
 title: "Lab1"
 author: "Pedro Vargas"
 date: "2024-08-04"
-output: html_document
+output: github_document
 ---
 
 PROBLEMA 1
