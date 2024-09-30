@@ -82,7 +82,7 @@ summary(df)
 ```
 
 
-```{r,echo=TRUE,cache=TRUE, eval=FALSE}
+```{r,echo=TRUE,cache=TRUE}
 
 
 raw_longer <-raw %>%
@@ -97,7 +97,7 @@ Segundo paso: Separar las variables que estan en la misma columna extrayendo la 
 
 Sugerencia, utilizar la funcion ```str_sub()``` del paquete **stringr**
 
-```{r, echo=TRUE, cache=TRUE, eval=FALSE}
+```{r, echo=TRUE, cache=TRUE}
 raw_longer$sex <- str_sub(raw_longer$GR, start = 1,end = 1)
 raw_longer$age <- str_sub(raw_longer$GR, start = 2, end = nchar(raw_longer$GR))
 
@@ -111,7 +111,7 @@ Tercer paso: Extraer y formatear la variable de edad.
 
 
 
-```{r, echo=TRUE, cache=TRUE, eval=FALSE}
+```{r, echo=TRUE, cache=TRUE}
 ages <- c("0-4", "5-14", "0-14", "15-24", "25-34", "35-44", "45-54", "55-64", "65+", NA)
 
 raw_longer$Age <- factor(recode(raw_longer$age,

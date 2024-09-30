@@ -134,6 +134,16 @@ raw_longer %>%
   head()
 ```
 
+    ## # A tibble: 6 × 5
+    ##       X country  year GR    Cases
+    ##   <int> <chr>   <int> <chr> <int>
+    ## 1    11 AD       2000 m014      0
+    ## 2    11 AD       2000 m1524     0
+    ## 3    11 AD       2000 m2534     1
+    ## 4    11 AD       2000 m3544     0
+    ## 5    11 AD       2000 m4554     0
+    ## 6    11 AD       2000 m5564     0
+
 Segundo paso: Separar las variables que estan en la misma columna
 extrayendo la variable de sexo (m,f).
 
@@ -148,6 +158,16 @@ raw_longer <- raw_longer %>%
 
 head(raw_longer)
 ```
+
+    ## # A tibble: 6 × 6
+    ##       X country  year Cases sex   age  
+    ##   <int> <chr>   <int> <int> <chr> <chr>
+    ## 1    11 AD       2000     0 m     014  
+    ## 2    11 AD       2000     0 m     1524 
+    ## 3    11 AD       2000     1 m     2534 
+    ## 4    11 AD       2000     0 m     3544 
+    ## 5    11 AD       2000     0 m     4554 
+    ## 6    11 AD       2000     0 m     5564
 
 Tercer paso: Extraer y formatear la variable de edad.
 
@@ -172,3 +192,13 @@ raw_longer <- raw_longer %>%
 
 head(raw_longer)
 ```
+
+    ## # A tibble: 6 × 6
+    ##       X country  year Cases sex   Age  
+    ##   <int> <chr>   <int> <int> <chr> <fct>
+    ## 1    11 AD       2000     0 m     0-14 
+    ## 2    11 AD       2000     0 m     15-24
+    ## 3    11 AD       2000     1 m     25-34
+    ## 4    11 AD       2000     0 m     35-44
+    ## 5    11 AD       2000     0 m     45-54
+    ## 6    11 AD       2000     0 m     55-64
