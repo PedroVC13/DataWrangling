@@ -1,0 +1,376 @@
+---
+title: "Lab4"
+author: "Pedro Vargas"
+date: "2024-09-07"
+output: html_document
+---
+
+```{r setup, include=TRUE}
+library(tidyverse)
+library(plotly)
+library(dplyr)
+library(stringr)
+
+ds <- read.csv("tabla_completa.csv")
+```
+
+```{r}
+flujo_caja <- ds %>%
+  group_by(MES)%>%
+  summarise(ingresos = sum(Q))
+
+print(flujo_caja)
+```
+
+
+
+```{r}
+viajes_pilotos <- ds %>%
+  group_by(PILOTO,MES) %>%
+  mutate(viajes = n_distinct(COD_VIAJE)) %>%
+  ungroup() %>%
+  group_by(PILOTO) %>%
+  summarise(viaje_promedio_mensual = mean(viajes)) %>%
+  arrange(desc(viaje_promedio_mensual))
+
+print(viajes_pilotos)
+```
+
+```{r}
+viajes_pilotos2 <- ds %>%
+  group_by(PILOTO,MES) %>%
+  summarise(viajes = n_distinct(COD_VIAJE)) %>%
+  filter(MES == 6)
+
+print(viajes_pilotos2)
+```
+
+```{r}
+viajes_pilotos3 <- ds %>%
+  group_by(PILOTO) %>%
+  summarise(total_viajes = n_distinct(COD_VIAJE),
+            viajes_panel = sum(UNIDAD == "Panel"))
+
+print(viajes_pilotos3)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+ingreso_unidad <- ds %>%
+  group_by(UNIDAD,MES) %>%
+  summarise(Ingresos = sum(Q),
+            viajes = n_distinct(COD_VIAJE)) %>%
+  filter(MES %in% c(3,6,5))
+
+print(ingreso_unidad)
+```
+
+
+```{r}
+viajes_unidades <- ds %>%
+  group_by(UNIDAD) %>%
+  summarise(total_viajes = n_distinct(COD_VIAJE)) %>%
+  arrange(desc(total_viajes))
+
+
+print(viajes_unidades)
+```
+
+
+
+
+```{r}
+demanda_mensual <- ds %>% 
+  group_by(MES) %>%
+  summarise(demanda = sum(CANTIDAD))
+
+print(demanda_mensual)
+```
+
+
+```{r}
+viajes_pilotos4 <- ds %>%
+  group_by(PILOTO) %>%
+  summarise(total_viajes = n_distinct(COD_VIAJE)) %>%
+  arrange(desc(total_viajes))
+
+print(viajes_pilotos4)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+devoluciones <- ds %>%
+  mutate(CLIENTE = str_to_upper(CLIENTE),
+         DEVOLUCION = str_detect(CLIENTE, "DEVOLUCION"),
+         CLIENTE = str_replace_all(CLIENTE, "DEVOLUCION|FALTANTE|DESPACHO A CLIENTE|/|\\|\\|\\|", ""))
+
+print(devoluciones)
+```
+
+
+```{r}
+ventas <- devoluciones %>%
+  mutate(CLIENTE = str_trim(CLIENTE)) %>%
+  group_by(CLIENTE) %>%
+  summarise(
+    devoluciones = sum(Q[DEVOLUCION == TRUE], na.rm = TRUE),
+    ventas = sum(Q[DEVOLUCION == FALSE], na.rm = TRUE),
+    total = ventas - devoluciones 
+  )
+
+print(ventas)
+```
+
+
+```{r}
+ingreso <- ventas %>%
+  summarise(Ingresos = sum(total), 
+            Perdidas = sum(devoluciones), 
+            Porcentaje = Perdidas/(Ingresos),
+            perdidas_mensuales = Perdidas/11,
+            ingreso_mensual=Ingresos/11,
+            Porcentaje2 = perdidas_mensuales/ingreso_mensual)
+
+print(ingreso)
+```
+
+
+
+
+
+
+```{r}
+faltantes <- ds %>%
+  mutate(CLIENTE = str_to_upper(CLIENTE),
+         FALTANTES = str_detect(CLIENTE, "FALTANTE"),
+         CLIENTE = str_replace_all(CLIENTE, "DEVOLUCION|FALTANTE|DESPACHO A CLIENTE|/|\\|\\|\\|", ""))
+
+print(faltantes)
+```
+
+```{r}
+ventas2 <- faltantes %>%
+  mutate(CLIENTE = str_trim(CLIENTE)) %>%
+  group_by(CLIENTE) %>%
+  summarise(
+    Incompletas = sum(FALTANTES == TRUE, na.rm = TRUE),
+    Completas = sum(FALTANTES == FALSE, na.rm = TRUE),
+    total = Completas - Incompletas,
+    total2 = Completas + Incompletas
+  ) %>%
+  arrange(total)
+
+no <- ventas2 %>%
+  summarise(envios=sum(total2))
+
+print(no)
+```
+
+
+```{r}
+faltas <- faltantes %>%
+  mutate(CLIENTE = str_trim(CLIENTE)) %>%
+  group_by(UBICACION) %>%
+  summarise(
+    Incompletas = sum(FALTANTES == TRUE, na.rm = TRUE),
+    Completas = sum(FALTANTES == FALSE, na.rm = TRUE),
+    total = Incompletas/Completas
+  )
+
+print(faltas)
+
+
+```
+
+
+```{r}
+faltantes_devoluciones <- ds %>%
+  mutate(CLIENTE = str_to_upper(CLIENTE),
+         FALTANTES = str_detect(CLIENTE, "FALTANTE"),
+         DEVOLUCIONES = str_detect(CLIENTE, "DEVOLUCION"),
+         CLIENTE = str_replace_all(CLIENTE, "DEVOLUCION|FALTANTE|DESPACHO A CLIENTE|/|\\|\\|\\|", ""))
+
+print(faltantes_devoluciones)
+```
+
+```{r}
+medias <- faltantes_devoluciones %>%
+  mutate(CLIENTE = str_trim(CLIENTE)) %>%
+  group_by(CLIENTE) %>%
+  summarise(media_sin_faltantes = mean(CANTIDAD[FALTANTES==FALSE], na.rm = TRUE),
+            media_total = mean(CANTIDAD,na.rm = TRUE),
+            demanda_no_completa = media_total - media_sin_faltantes)
+
+print(medias)
+```
+
+```{r}
+media_productos_no_entregados <- medias %>%
+  summarise(CLIENTE,
+            media_ordenada = pmax(media_sin_faltantes, media_total, na.rm = TRUE),
+         media_entregada = media_total,
+         demanda_no_completa = media_ordenada - media_entregada)
+
+print(media_productos_no_entregados)
+```
+
+```{r}
+promedio_unidades_no_cumplidas <- media_productos_no_entregados %>%
+  summarise(producto_no_entregado = sum(demanda_no_completa)/2)
+
+print(promedio_unidades_no_cumplidas)
+```
+
+```{r}
+pedidos_con_faltantes <- faltantes_devoluciones %>%
+  summarise(pedidos = sum(FALTANTES == TRUE, na.rm = TRUE),
+            unidades_faltantes_menusales_totales = (pedidos * 40)/11,
+            ingresos_perdidos_mensuales = unidades_faltantes_menusales_totales * 0.25,
+            unidades_faltantes_totales = pedidos * 40,
+            ingresos_perdidos = unidades_faltantes_totales * 0.25,
+            ingresos = 532707.2,
+            ingresos_mensuales = ingresos/11,
+            perdida_mensual = ingresos_perdidos_mensuales/ingresos_mensuales,
+            perdida_total = ingresos_perdidos/ingresos)
+print(pedidos_con_faltantes)
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+piloto_CHICHARRONERIA <- faltantes %>%
+  mutate(CLIENTE = str_trim(CLIENTE)) %>%
+  group_by(CLIENTE,PILOTO) %>%
+  summarise(viajes = n()) %>%
+  filter(CLIENTE == "CHICHARRONERIA EL RICO COLESTEROL")
+
+print(piloto_CHICHARRONERIA)
+```
+
+```{r}
+pilotos_faltantes <- faltantes %>%
+  mutate(CLIENTE = str_trim(CLIENTE)) %>%
+  group_by(PILOTO) %>%
+  summarise(
+    Incompletas = sum(FALTANTES == TRUE, na.rm = TRUE),
+    Completas = sum(FALTANTES == FALSE, na.rm = TRUE),
+    Porcentaje = (Incompletas/(Completas+Incompletas))*100
+  ) %>%
+  arrange(desc(Porcentaje))
+
+print(pilotos_faltantes)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
